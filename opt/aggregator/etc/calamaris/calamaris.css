@@ -1,0 +1,66 @@
+<style type="text/css">
+
+	body { 
+		font-family:Arial,Helvetica,sans-serif; 
+		font-size:10pt; 
+		/* font-weight:500;  */
+		color:#444444; 
+		background-color:#FFFFFF;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	td {
+		padding: 0.25em 0.5em 0.25em 0.5em;
+	}
+
+	h4 { font-size:8pt;
+		font-weight:500; 
+		color:#222266;
+	}
+
+	
+th {
+	/* background-color: #CCCCCC; */
+	/* font-family: Arial,Helvetica,sans-serif; */
+	font-size: 1.1em;
+	/* font-weight: 700; */
+	/* color: #222266; */
+	/* border-bottom: 1px solid #CCCCCC; */
+}
+	
+	tr {
+		border-bottom: 1px solid #F0F0F0;
+	}
+
+	b  { font-size:11pt;
+		font-weight:600;
+		color:#222266;
+	}
+	
+	
+td.head {
+	background-color: #E0E0E0;
+	/* width: 600px; */
+	/* text-align: center; */
+	font-size: 1.2em;
+	/* font-weight: 800; */
+	/* color: #222266; */
+}
+
+	/*  ... table dataline ... */
+	.line_2 { border-top: 1px solid #ff9900; color: #D16B00 } 
+	.line_1 { background-color:#EFEFEF; } 
+	.line_0 { background-color:#FFFFFF; } 
+
+	/*  ... Link definintion ... */
+	a    {text-decoration:none;}
+	a:link    {color:#222266;}
+	a:visited {color:#222266;}
+	a:active  {color:#222266;}
+	a:hover   {color:#ff9900;}
+
+</style>
