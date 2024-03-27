@@ -18,6 +18,17 @@ GOACCESS_CACHE="${CACHE}/goaccess"
 LOG="/var/log/goaccess.log"
 
 SERVERS=();
+
+GET_V_SERVER()
+{
+	local V_SERVER_STRING="#VIP*"
+	local COMMENT="#VIP_"
+	while read -r VNAME
+	do
+		[[ $VNAME == $V_SERVER_STRING ]] && SERVERS+=${VNAME#$COMMENT}
+	done < "${SERVERS_LIST}"
+}
+
 GET_SERVERS()
 {
 	local COMMENT="#*"
@@ -59,6 +70,7 @@ MAKE_REPORT()
 	[ "x${SRV}" == "x${LOCAL_HOST}" ] && local LOG_FILE="${LOG_FILE_LOCAL}"
 	
 	local REPORT_FOLDER="${WWW}/${SRV}/goaccess"
+	
 	local FIFO_OUT="/tmp/${SRV}.goaccess.out"
 	local FIFO_IN="/tmp/${SRV}.goaccess.in"
 	local DB_PATH="${GOACCESS_CACHE}/${SRV}"
@@ -94,17 +106,20 @@ MAKE_REPORT()
 	cat <<- _EOF >> ${LOG}
 	${GOACCESS_COMMAND} ${OUTPUT[*]} --html-report-title="${TITLE}"
 	_EOF
+
 	${GOACCESS_COMMAND} ${OUTPUT[*]} --html-report-title="${TITLE}"
 }
 
 DO_REPORTS()
 {
+	GET_V_SERVER
 	GET_SERVERS
 	s=${#SERVERS[@]}
 	for (( i=0; i<s; i++))
 	do
 	_SRV="${SERVERS[$i]}"
 	PROCESS_RUNNING $_SRV && continue;
+
 	P=$[ i + 7890 ]
 	mkdir -p ${WWW}/${SERVERS[$i]}/goaccess
 	MAKE_REPORT ${SERVERS[$i]} ${P}

@@ -12,6 +12,7 @@ fi
 [ ! -f "/opt/aggregator/setup.ini" ] && exit;
 . /opt/aggregator/setup.ini
 
+
 RSYNC_COMMAND="/usr/bin/rsync"
 LOG_CONVERTOR="/usr/local/bin/log_convert"
 
@@ -21,6 +22,16 @@ ACCESS_LOG_DIR=${CACHE}/${ACCESS_LOG_SUB_FOLDER}
 declare -A SERVER_UPDATED=();
 
 SERVERS=();
+
+GET_V_SERVER()
+{
+	local V_SERVER_STRING="#VIP*"
+	local COMMENT="#VIP_"
+	while read -r VNAME
+	do
+		[[ $VNAME == $V_SERVER_STRING ]] && SERVERS+=${VNAME#$COMMENT}
+	done < "${SERVERS_LIST}"
+}
 
 GET_SERVERS()
 {
@@ -38,6 +49,7 @@ SET_SD()
 	local BD=`date --date="${TS} +0 day" +"%s"`;
 	echo ${BD}
 }
+
 
 PARSE_LOG()
 {
@@ -103,6 +115,7 @@ SORT()
 	local SRV=$1
 	local DEST=${ACCESS_LOG_DIR}/${SRV}
 	
+	
 	find ${DEST}/*.log -type f -printf "%Ts %p %f\n" | while read TIMESTAMP FULL_PATH AXLOG
 	do
 		TS=`date --date=@${TIMESTAMP} +"%F"`
@@ -130,6 +143,7 @@ SET_TRIGGER()
 
 MAIN()
 {
+	GET_V_SERVER
 	GET_SERVERS
 	declare -i s=${#SERVERS[@]}
 	

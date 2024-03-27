@@ -14,6 +14,16 @@ fi
 
 SERVERS=();
 
+GET_V_SERVER()
+{
+	local V_SERVER_STRING="#VIP*"
+	local COMMENT="#VIP_"
+	while read -r VNAME
+	do
+		[[ $VNAME == $V_SERVER_STRING ]] && SERVERS+=${VNAME#$COMMENT}
+	done < "${SERVERS_LIST}"
+}
+
 GET_SERVERS()
 {
 	local COMMENT="#*"
@@ -77,7 +87,7 @@ MONTHLY_REPORT()
 	ARGS+=('--output-file'); ARGS+=("index.html");
 	ARGS+=('--meta'); ARGS+=("${CALAMARIS_CSS}");
 	
-	${CALAMARIS_COMMAND} ${ARGS[@]} -H "${REPORT_NAME}"
+	${CALAMARIS_COMMAND} "${ARGS[@]}" -H "${REPORT_NAME}"
 		
 	return;
 }
@@ -128,7 +138,7 @@ WEEKLY_REPORT()
 	${CALAMARIS_COMMAND} ${ARGS[@]} -H "${REPORT_NAME}"
 	_EOF
 	
-	${CALAMARIS_COMMAND} ${ARGS[@]} -H "${REPORT_NAME}"
+	${CALAMARIS_COMMAND} "${ARGS[@]}" -H "${REPORT_NAME}"
 		
 	return;
 }
@@ -175,7 +185,7 @@ DAILY_REPORT()
 	_EOF
 
 
-	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${CALAMARIS_COMMAND} ${ARGS[@]} -H "${REPORT_NAME}"
+	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${CALAMARIS_COMMAND} "${ARGS[@]}" -H "${REPORT_NAME}"
 	cat <<- _EOF
 	[ -f ${CACHE_OUT} ] && touch -c --date="${BW}" ${CACHE_OUT}
 	_EOF
@@ -216,6 +226,7 @@ DO_REPORTS()
 MAIN()
 {
 	date
+	GET_V_SERVER
 	GET_SERVERS
 	SET_DATE "$1"
 	DO_REPORTS

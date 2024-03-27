@@ -14,6 +14,16 @@ fi
 
 SERVERS=();
 
+GET_V_SERVER()
+{
+	local V_SERVER_STRING="#VIP*"
+	local COMMENT="#VIP_"
+	while read -r VNAME
+	do
+		[[ $VNAME == $V_SERVER_STRING ]] && SERVERS+=${VNAME#$COMMENT}
+	done < "${SERVERS_LIST}"
+}
+
 GET_SERVERS()
 {
 	local COMMENT="#*"
@@ -93,6 +103,7 @@ DO_REPORTS()
 MAIN()
 {
 	SET_DATE "$1"
+	GET_V_SERVER
 	GET_SERVERS
 	DO_REPORTS
 }

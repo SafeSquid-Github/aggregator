@@ -13,6 +13,17 @@ fi
 . /opt/aggregator/setup.ini
 
 SERVERS=();
+
+GET_V_SERVER()
+{
+	local V_SERVER_STRING="#VIP*"
+	local COMMENT="#VIP_"
+	while read -r VNAME
+	do
+		[[ $VNAME == $V_SERVER_STRING ]] && SERVERS+=${VNAME#$COMMENT}
+	done < "${SERVERS_LIST}"
+}
+
 GET_SERVERS()
 {
 	local COMMENT="#*"
@@ -34,6 +45,7 @@ SET_DATE()
 	TS=`date --date="$D" +"%F"`
 }
 
+
 WEEKLY_REPORT()
 {
 	local SRV=$1
@@ -54,9 +66,10 @@ WEEKLY_REPORT()
 
 	SD=`date --date="${BW}" +"%d/%m/%Y"`
 	ED=`date --date="${EW}" +"%d/%m/%Y"`
+
 	mkdir -p "${REPORT_FOLDER}"
 
-	ARGS+=('-f'); ARGS+=("${SARG_CONF}")
+	ARGS+=('-c'); ARGS+=("${SARG_CONF}")
 	ARGS+=('-d'); ARGS+=("${SD}-${ED}")
 	ARGS+=('-o'); ARGS+=("${REPORT_FOLDER}");
 	ARGS+=('--keeplogs');
@@ -65,6 +78,7 @@ WEEKLY_REPORT()
 	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${SARG} ${ARGS[@]}
 	_EOF
 	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${SARG} ${ARGS[@]}
+
 }
 
 DAILY_REPORT()
@@ -89,7 +103,7 @@ DAILY_REPORT()
 	
 	mkdir -p "${REPORT_FOLDER}"
 
-	ARGS+=('-f'); ARGS+=("${SARG_CONF}")
+	ARGS+=('-c'); ARGS+=("${SARG_CONF}")
 	ARGS+=('-d'); ARGS+=("${SD}-${ED}")
 	ARGS+=('-o'); ARGS+=("${REPORT_FOLDER}");
 	ARGS+=('--keeplogs');
@@ -99,6 +113,7 @@ DAILY_REPORT()
 	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${SARG} ${ARGS[@]}
 	_EOF
 	find ${AXLOG} -type f -newermt "${BW}" ! -newermt "${EW}" -size +0 -exec cat {} \; | ${SARG} ${ARGS[@]}
+
 }
 
 SERVER_REPORT()
@@ -108,6 +123,7 @@ SERVER_REPORT()
 	DAILY_REPORT ${_SRV}
 	WEEKLY_REPORT ${_SRV}
 }
+
 
 DO_REPORTS()
 {
@@ -122,6 +138,7 @@ DO_REPORTS()
 MAIN()
 {
 	date
+	GET_V_SERVER
 	GET_SERVERS
 	SET_DATE "$1"
 	DO_REPORTS
