@@ -55,6 +55,8 @@ MONTHLY_REPORT()
 	SRV=$1
 	local AXLOG="${ACCESS_LOG_DIR}/${SRV}/*.log"
 
+	[ "x${2}" == "x*" ] && AXLOG="${ACCESS_LOG_DIR}/*/*.log"
+
 	SD="";
 	ED="";
 	
@@ -86,7 +88,7 @@ SERVER_REPORT()
 {
 	local _SRV="${1}"
 	mkdir -p ${WWW}/${_SRV}/squint
-	MONTHLY_REPORT ${_SRV}
+	MONTHLY_REPORT ${_SRV} "$2"
 }
 
 DO_REPORTS()
@@ -97,13 +99,15 @@ DO_REPORTS()
 		SERVER_REPORT "${SERVERS[$i]}"
 		_SRV="${SERVERS[$i]}"
 	done
+	
+	[ "x${CLUSTER_ID}" != "x" ] && SERVER_REPORT "${CLUSTER_ID}" "*"
 	wait
 }
 
 MAIN()
 {
 	SET_DATE "$1"
-	GET_V_SERVER
+	# GET_V_SERVER
 	GET_SERVERS
 	DO_REPORTS
 }

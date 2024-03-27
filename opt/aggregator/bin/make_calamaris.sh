@@ -149,6 +149,7 @@ DAILY_REPORT()
 	echo "Making Daily Report"
 	
 	local AXLOG="${ACCESS_LOG_DIR}/${SRV}/*.log"
+	[ "x${2}" == "x*" ] && AXLOG="${ACCESS_LOG_DIR}/*/*.log"
 
 	local W=`date --date="${TS}" +"%w"`
 	local D=`date --date="${TS}" +"%-d"`
@@ -198,11 +199,11 @@ DAILY_REPORT()
 
 SERVER_REPORT()
 {
-	local _SRV="${1}"
+	local _SRV="${1}"	
 	mkdir -p ${WWW}/${_SRV}/calamaris
-	DAILY_REPORT ${_SRV}
-	WEEKLY_REPORT ${_SRV}
-	MONTHLY_REPORT ${_SRV}
+	DAILY_REPORT ${_SRV} "${2}"
+	WEEKLY_REPORT ${_SRV} "${2}"
+	MONTHLY_REPORT ${_SRV} "${2}"
 	echo "created report for ${_SRV}"
 
 	find "${WWW}/${_SRV}/calamaris/" -empty -type d -delete
@@ -220,13 +221,15 @@ DO_REPORTS()
 	do
 		SERVER_REPORT "${SERVERS[$i]}"
 	done
+	
+	[ "x${CLUSTER_ID}" != "x" ] && SERVER_REPORT "${CLUSTER_ID}" "*"
 	wait
 }
 
 MAIN()
 {
 	date
-	GET_V_SERVER
+#	GET_V_SERVER
 	GET_SERVERS
 	SET_DATE "$1"
 	DO_REPORTS

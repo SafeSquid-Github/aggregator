@@ -55,11 +55,18 @@ DAILY_REPORT()
 	local EXLOG_LOCAL="${LOG_DIRECTORY}/${EXTENDED_LOG_SUB_FOLDER}/*"
 #EXTENDED_LOG_SUB_FOLDER
 
+	[ "x${2}" == "x*" ] && EXLOG_REMOTE="${LOCAL_AGGREGATOR_DIRECTORY}/*/${EXTENDED_LOG_SUB_FOLDER}/*"
+
+
+
 	echo "Making Daily Report"
 	local REPORT_FOLDER="${WWW}/${SRV}/webalizer"
 	local SD="";
 	local ED="";
 	local AXLOG="${CACHE}/${ACCESS_LOG_SUB_FOLDER}/${SRV}/*.log"
+	
+	[ "x${2}" == "x*" ] && AXLOG="${CACHE}/${ACCESS_LOG_SUB_FOLDER}/*/*.log"
+	
 	[ "x${SRV}" == "x${LOCAL_HOST}"  ] && local EXLOG="${EXLOG_LOCAL}" || local EXLOG="${EXLOG_REMOTE}"
 	local BW=`date --date="${TS}" +"%F"`; 
 	local EW=`date --date="${TS} +1 days" +"%F"`; 
@@ -86,7 +93,7 @@ SERVER_REPORT()
 {
 	local _SRV="${1}"
 	mkdir -p ${WWW}/${_SRV}/webalizer
-	DAILY_REPORT ${_SRV}
+	DAILY_REPORT ${_SRV} "$2"
 }
 
 DO_REPORTS()
@@ -96,13 +103,15 @@ DO_REPORTS()
 	do
 		SERVER_REPORT "${SERVERS[$i]}"
 	done
+	
+	[ "x${CLUSTER_ID}" != "x" ] && SERVER_REPORT "${CLUSTER_ID}" "*"
 	wait
 }
 
 MAIN()
 {
 	date
-	GET_V_SERVER
+#	GET_V_SERVER
 	GET_SERVERS
 	SET_DATE "$1"
 	DO_REPORTS

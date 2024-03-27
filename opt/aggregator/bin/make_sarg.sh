@@ -58,6 +58,8 @@ WEEKLY_REPORT()
 	local ED="";
 	local AXLOG="${ACCESS_LOG_DIR}/${SRV}/*.log"
 
+	[ "x${2}" == "x*" ] && AXLOG="${ACCESS_LOG_DIR}/*/*.log"
+
 	local BW=`date --date="${TS} -${W} days" +"%F"`; 
 	local EW=`date --date="${BW} +6 days" +"%F"`; 
 
@@ -92,6 +94,9 @@ DAILY_REPORT()
 	local ED="";
 	local AXLOG="${ACCESS_LOG_DIR}/${SRV}/*.log"
 
+	[ "x${2}" == "x*" ] && AXLOG="${ACCESS_LOG_DIR}/*/*.log"
+
+
 	local BW=`date --date="${TS}" +"%F"`; 
 	local EW=`date --date="${TS} +1 days" +"%F"`; 
 
@@ -120,8 +125,8 @@ SERVER_REPORT()
 {
 	local _SRV="${1}"
 	mkdir -p ${WWW}/${_SRV}/sarg
-	DAILY_REPORT ${_SRV}
-	WEEKLY_REPORT ${_SRV}
+	DAILY_REPORT ${_SRV} "$2"
+	WEEKLY_REPORT ${_SRV} "$2"
 }
 
 
@@ -132,13 +137,15 @@ DO_REPORTS()
 	do
 		SERVER_REPORT "${SERVERS[$i]}"
 	done
+	
+	[ "x${CLUSTER_ID}" != "x" ] && SERVER_REPORT "${CLUSTER_ID}" "*"
 	wait
 }
 
 MAIN()
 {
 	date
-	GET_V_SERVER
+	# GET_V_SERVER
 	GET_SERVERS
 	SET_DATE "$1"
 	DO_REPORTS

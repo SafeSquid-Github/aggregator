@@ -143,7 +143,7 @@ SET_TRIGGER()
 
 MAIN()
 {
-	GET_V_SERVER
+#	GET_V_SERVER
 	GET_SERVERS
 	declare -i s=${#SERVERS[@]}
 	
